@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Ing. Agr. Franco Martignoni (MP 4749)">
+<!-- © 2026 Ing. Agr. Franco Martignoni, MP 4749. Todos los derechos reservados. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lista de precios · RyCDAS</title>
+<meta name="theme-color" content="#D9E6CF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141914" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Precios RyC">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#D9E6CF; --surface:#F4F8EE; --ink:#1C2B1C; --muted:#526350; --rule:#B4C8A5;
+  --accent:#DD7530; --accent-ink:#9C4A15;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141914; --surface:#1C231C; --ink:#E4E8DC; --muted:#9AA592; --rule:#334033;
+    --accent:#E8894A; --accent-ink:#F0A874;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141914; --surface:#1C231C; --ink:#E4E8DC; --muted:#9AA592; --rule:#334033;
+  --accent:#E8894A; --accent-ink:#F0A874;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:14px 18px 90px}
+h1{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0;font-size:clamp(28px,7vw,38px);line-height:1.05}
+p{margin:0}
+.muted{color:var(--muted)}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* encabezado */
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{display:inline-block;border-radius:8px;line-height:0}
+.brand img{height:40px;width:auto;max-width:100%}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand{background:#fff;padding:5px 9px}}
+:root[data-theme="dark"] .brand{background:#fff;padding:5px 9px}
+.btn-instalar{border:0;background:var(--accent);color:#fff;font-weight:600;font-size:14px;padding:9px 14px;border-radius:999px;white-space:nowrap}
+.sub{margin-top:6px;font-size:14px}
+
+/* buscador y filtros (fijos arriba al hacer scroll) */
+.tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin:14px -18px 0;padding:10px 18px 10px;border-bottom:1px solid var(--rule)}
+.search{position:relative}
+.search input{width:100%;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 44px 12px 14px;font-size:17px;color:var(--ink);-webkit-appearance:none;appearance:none}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none}
+.search input::placeholder{color:var(--muted)}
+.limpiar{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:none;color:var(--muted);font-size:24px;line-height:1;border-radius:8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 13px;font-size:14px;white-space:nowrap}
+.chip .n{color:var(--muted);font-size:12px;margin-left:4px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.75}
+.fila-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0 4px;font-size:13px;color:var(--muted)}
+.fila-meta select{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:5px 8px;font-size:13px;color:var(--ink)}
+
+/* lista */
+.lista{list-style:none;margin:0;padding:0}
+.it{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:6px 10px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.nom{font-weight:600;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.stk{font-size:13px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.stk b{font-weight:600;color:var(--ink)}
+.prc{text-align:right;line-height:1.1}
+.prc .mon{display:block;font-size:11px;color:var(--muted);letter-spacing:.04em}
+.prc .pv{font-family:var(--serif);font-weight:600;font-size:21px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.prc .cons{font-size:14px;color:var(--muted);font-style:italic}
+.wa{width:40px;height:40px;border:1px solid var(--rule);background:var(--surface);color:var(--accent-ink);border-radius:10px;display:grid;place-items:center;padding:0}
+.wa svg{width:18px;height:18px}
+mark{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.vacio{padding:36px 8px;text-align:center}
+
+/* avisos */
+.aviso,.tip{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:20;max-width:560px;margin:0 auto;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:14px}
+.aviso{background:var(--accent);color:#fff}
+.aviso button{border:0;background:#fff;color:#7a3a0d;font-weight:600;border-radius:8px;padding:8px 14px;flex:none}
+.tip{background:var(--ink);color:var(--bg)}
+.tip button{border:0;background:none;color:inherit;font-size:22px;line-height:1;padding:4px 8px;flex:none}
+.tip svg{width:16px;height:16px;vertical-align:-3px}
+noscript p{padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="brand"><img src="logo.png" alt="Rindes y Cultivos DAS · Gente de Campo" width="416" height="76"></span>
+    <button class="btn-instalar" id="btnInstalar" hidden>Instalar app</button>
+  </header>
+
+  <h1>Lista de precios</h1>
+  <p class="sub muted" id="sub">Cargando…</p>
+
+  <div class="tools">
+    <div class="search">
+      <input id="q" type="search" placeholder="Buscar artículo…" aria-label="Buscar artículo" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      <button class="limpiar" id="limpiar" aria-label="Borrar búsqueda" hidden>×</button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por tipo"></div>
+  </div>
+
+  <div class="fila-meta">
+    <span id="cuenta"></span>
+    <label>Orden
+      <select id="orden">
+        <option value="az">A–Z</option>
+        <option value="pmen">Precio: menor a mayor</option>
+        <option value="pmay">Precio: mayor a menor</option>
+        <option value="stk">Mayor disponible</option>
+      </select>
+    </label>
+  </div>
+
+  <ul class="lista" id="lista"></ul>
+  <p class="vacio muted" id="vacio" hidden></p>
+  <noscript><p>Esta app necesita JavaScript para mostrar la lista.</p></noscript>
+</div>
+
+<div class="aviso" id="aviso" role="status" hidden>
+  <span>Hay una lista nueva disponible.</span>
+  <button id="btnActualizar">Actualizar</button>
+</div>
+
+<div class="tip" id="tipIOS" hidden>
+  <span>Para instalarla en tu iPhone: tocá
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Compartir"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+    y después «Agregar a inicio».</span>
+  <button id="cerrarTip" aria-label="Cerrar">×</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+var KEY_DATOS = 'rycdas-lista-datos';
+var KEY_TIP   = 'rycdas-lista-tip-ios';
+var CADA_MS   = 3 * 60 * 1000;          // revisa si hay lista nueva cada 3 minutos
+
+function $(id){ return document.getElementById(id); }
+var fmtP = new Intl.NumberFormat('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+var fmtS = new Intl.NumberFormat('es-AR', {maximumFractionDigits:2});
+function norm(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+function esc(s){ return s.replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+/* ---- grupos por nombre (solo los que se reconocen sin ambigüedad) ---- */
+var GRUPOS = [
+  {id:'todos',   txt:'Todos',   re:null},
+  {id:'maiz',    txt:'Maíz',    re:/^maiz\b/},
+  {id:'girasol', txt:'Girasol', re:/^girasol\b/},
+  {id:'soja',    txt:'Soja',    re:/^sem\.? soja\b/},
+  {id:'sorgo',   txt:'Sorgo',   re:/^sorgo\b/}
+];
+function grupoDe(n){
+  for(var i=1;i<GRUPOS.length;i++){ if(GRUPOS[i].re.test(n)) return GRUPOS[i].id; }
+  return '';
+}
+
+var datos = null;      // lo que se está mostrando
+var ITEMS = [];
+var grupo = 'todos';
+
+function preparar(d){
+  var arr = d.items.map(function(x){
+    var n = norm(x[0]);
+    return {nom:x[0], n:n, c:n.replace(/\s+/g,''), p:x[1], s:x[2], g:grupoDe(n)};
+  });
+  arr.sort(function(a,b){ return a.nom.localeCompare(b.nom,'es',{numeric:true,sensitivity:'base'}); });
+  arr.forEach(function(it,i){ it.i = i; });
+  return arr;
+}
+
+function fechaAR(iso){ var p = iso.split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : iso; }
+
+function usar(d){
+  datos = d;
+  ITEMS = preparar(d);
+  $('sub').textContent = d.lista + ' · actualizada al ' + fechaAR(d.fecha) + ' · ' + ITEMS.length + ' artículos';
+  var cont = $('chips'); cont.innerHTML = '';
+  GRUPOS.forEach(function(g){
+    var cant = g.id==='todos' ? ITEMS.length : ITEMS.filter(function(it){ return it.g===g.id; }).length;
+    if(!cant) return;
+    var b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.dataset.g = g.id;
+    b.setAttribute('aria-pressed', g.id===grupo ? 'true' : 'false');
+    b.innerHTML = esc(g.txt) + '<span class="n">' + cant + '</span>';
+    cont.appendChild(b);
+  });
+  render();
+}
+
+function resaltar(it,toks){
+  if(!toks.length || it.n.length !== it.nom.length) return esc(it.nom);
+  var m = new Array(it.nom.length).fill(false);
+  toks.forEach(function(t){
+    var k = it.n.indexOf(t);
+    while(k !== -1){ for(var j=k;j<k+t.length;j++) m[j]=true; k = it.n.indexOf(t,k+t.length); }
+  });
+  var out = '', abierto = false;
+  for(var i=0;i<it.nom.length;i++){
+    if(m[i] && !abierto){ out += '<mark>'; abierto = true; }
+    if(!m[i] && abierto){ out += '</mark>'; abierto = false; }
+    out += esc(it.nom[i]);
+  }
+  return abierto ? out + '</mark>' : out;
+}
+
+var ICONO_ENVIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>';
+
+function fila(it,toks){
+  var precio = it.p > 0
+    ? '<span class="mon">U$S</span><span class="pv">' + fmtP.format(it.p) + '</span>'
+    : '<span class="cons">Consultar</span>';
+  return '<li class="it"><div><div class="nom">' + resaltar(it,toks) + '</div>' +
+         '<div class="stk">Disponible: <b>' + fmtS.format(it.s) + '</b></div></div>' +
+         '<div class="prc">' + precio + '</div>' +
+         '<button class="wa" type="button" data-i="' + it.i + '" aria-label="Enviar por WhatsApp: ' + esc(it.nom) + '">' + ICONO_ENVIAR + '</button></li>';
+}
+
+function render(){
+  var q = $('q').value;
+  $('limpiar').hidden = !q;
+  var toks = norm(q).split(/\s+/).filter(Boolean);
+  var r = ITEMS.filter(function(it){
+    if(grupo!=='todos' && it.g!==grupo) return false;
+    return toks.every(function(t){ return it.n.indexOf(t)!==-1 || it.c.indexOf(t)!==-1; });
+  });
+  var o = $('orden').value;
+  if(o==='pmen') r.sort(function(a,b){ return (a.p===0)-(b.p===0) || a.p-b.p || a.i-b.i; });
+  else if(o==='pmay') r.sort(function(a,b){ return (a.p===0)-(b.p===0) || b.p-a.p || a.i-b.i; });
+  else if(o==='stk') r.sort(function(a,b){ return b.s-a.s || a.i-b.i; });
+  else r.sort(function(a,b){ return a.i-b.i; });
+
+  $('cuenta').textContent = r.length + (r.length===1 ? ' artículo' : ' artículos');
+  $('lista').innerHTML = r.map(function(it){ return fila(it,toks); }).join('');
+  var v = $('vacio');
+  if(r.length){ v.hidden = true; }
+  else { v.hidden = false; v.textContent = q ? 'Sin resultados para «' + q.trim() + '».' : 'No hay artículos en este filtro.'; }
+}
+
+/* ---- eventos de la interfaz ---- */
+$('q').addEventListener('input', render);
+$('orden').addEventListener('change', render);
+$('limpiar').addEventListener('click', function(){ $('q').value=''; render(); $('q').focus(); });
+$('chips').addEventListener('click', function(e){
+  var b = e.target.closest('.chip'); if(!b) return;
+  grupo = b.dataset.g;
+  Array.prototype.forEach.call($('chips').children, function(c){ c.setAttribute('aria-pressed', c===b ? 'true' : 'false'); });
+  render();
+  window.scrollTo({top:0});
+});
+$('lista').addEventListener('click', function(e){
+  var b = e.target.closest('.wa'); if(!b) return;
+  var it = ITEMS[+b.dataset.i]; if(!it) return;
+  var msg = '*' + it.nom + '*' + (it.p>0 ? ' — U$S ' + fmtP.format(it.p) : ' — consultar precio') +
+            '\n' + datos.lista + ' · Rindes y Cultivos DAS';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+});
+
+/* ---- carga de datos (red primero, con copia guardada como respaldo) ---- */
+function traer(ms){
+  var f = fetch('datos.json', {cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('http ' + r.status);
+    return r.json();
+  });
+  if(!ms) return f;
+  return new Promise(function(ok,mal){
+    var t = setTimeout(function(){ mal(new Error('timeout')); }, ms);
+    f.then(function(d){ clearTimeout(t); ok(d); }, function(e){ clearTimeout(t); mal(e); });
+  });
+}
+function copiaGuardada(){
+  try{ var d = JSON.parse(lsGet(KEY_DATOS)); return d && d.items ? d : null; }catch(e){ return null; }
+}
+
+function chequear(){
+  if(!datos) return;
+  if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistration().then(function(r){ if(r) r.update(); }).catch(function(){}); }
+  traer().then(function(d){
+    if(d.version !== datos.version){
+      lsSet(KEY_DATOS, JSON.stringify(d));
+      $('tipIOS').hidden = true;
+      $('aviso').hidden = false;
+    }
+  }).catch(function(){});
+}
+$('btnActualizar').addEventListener('click', function(){ location.reload(); });
+
+function iniciar(){
+  var guardada = copiaGuardada();
+  // con copia guardada, no esperamos más de 4 s a la red (por si hay poca señal en el campo)
+  traer(guardada ? 4000 : 0).catch(function(){ return guardada; }).then(function(d){
+    if(!d){ $('sub').textContent = 'No se pudo cargar la lista. Revisá la conexión y volvé a abrir la app.'; return; }
+    lsSet(KEY_DATOS, JSON.stringify(d));
+    usar(d);
+    setInterval(chequear, CADA_MS);
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden) chequear(); });
+    window.addEventListener('online', chequear);
+    mostrarTipIOS();
+  });
+}
+
+/* ---- instalación ---- */
+var promptInstalar = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); promptInstalar = e; $('btnInstalar').hidden = false;
+});
+$('btnInstalar').addEventListener('click', function(){
+  if(!promptInstalar) return;
+  promptInstalar.prompt();
+  promptInstalar.userChoice.then(function(){ promptInstalar = null; $('btnInstalar').hidden = true; });
+});
+window.addEventListener('appinstalled', function(){ $('btnInstalar').hidden = true; });
+
+function mostrarTipIOS(){
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  var instalada = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+  if(ios && !instalada && !lsGet(KEY_TIP) && $('aviso').hidden) $('tipIOS').hidden = false;
+}
+$('cerrarTip').addEventListener('click', function(){ $('tipIOS').hidden = true; lsSet(KEY_TIP,'1'); });
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+
+iniciar();
+})();
+</script>
+</body>
+</html>
