@@ -81,13 +81,19 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .fld select{width:100%;min-width:0;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:10px 8px;font-size:15px;color:var(--ink);text-overflow:ellipsis}
 .fld select.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);font-weight:600}
 .fila-meta{display:flex;justify-content:space-between;align-items:center;gap:6px 10px;padding:12px 0 4px;font-size:13px;color:var(--muted)}
-.fila-meta .izq{display:flex;align-items:center;gap:12px;min-width:0}
 .fila-meta select{max-width:150px;background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:5px 8px;font-size:13px;color:var(--ink)}
-.btn-limpiar{border:0;background:none;padding:4px 0;color:var(--accent-ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.acciones{display:flex;flex-wrap:wrap;gap:0 18px;padding:0 0 4px}
+.acciones button{border:0;background:none;padding:6px 0;color:var(--accent-ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 
 /* lista */
 .lista{list-style:none;margin:0;padding:0}
-.it{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:6px 10px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.it{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:6px 8px;padding:12px 8px 12px 0;margin:0 -8px 0 -8px;padding-left:8px;border-bottom:1px solid var(--rule)}
+.it.sel{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.chk{width:36px;height:36px;border:0;background:none;padding:0;display:grid;place-items:center}
+.chk span{width:24px;height:24px;border:2px solid var(--muted);border-radius:7px;display:grid;place-items:center;background:var(--surface);color:#fff}
+.chk svg{width:15px;height:15px;opacity:0}
+.it.sel .chk span{background:var(--accent);border-color:var(--accent)}
+.it.sel .chk svg{opacity:1}
 .nom{font-weight:600;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
 .meta{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.35;overflow-wrap:anywhere}
 .meta .sep{color:var(--muted)}
@@ -102,6 +108,27 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .wa svg{width:18px;height:18px}
 mark{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inherit;border-radius:3px;padding:0 1px}
 .vacio{padding:36px 8px;text-align:center}
+
+/* barra de selección y hoja de mensaje */
+.selbar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:15;max-width:560px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:14px;padding:8px 8px 8px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+.selbar .n{flex:1;font-weight:600;font-size:15px}
+.selbar .sec{border:0;background:none;color:inherit;padding:8px 6px;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.selbar .prim{border:0;background:var(--accent);color:#fff;font-weight:600;padding:11px 16px;border-radius:10px;font-size:15px}
+body.conSel .aviso,body.conSel .tip{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.hoja{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.hoja-fondo{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.hoja-panel{position:relative;width:100%;max-width:560px;max-height:90vh;overflow:auto;background:var(--surface);border-radius:16px 16px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
+.hoja-cab{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hoja-cab h2{font-family:var(--serif);font-weight:600;font-size:20px;margin:0}
+.hoja-cab button{border:0;background:none;font-size:28px;line-height:1;width:40px;height:40px;color:var(--muted)}
+.hoja-opc{display:flex;flex-direction:column;gap:2px;margin-bottom:10px;font-size:14px}
+.hoja-opc label{display:flex;align-items:center;gap:10px;padding:6px 0}
+.hoja-opc input{accent-color:var(--accent);width:18px;height:18px;margin:0}
+.hoja textarea{width:100%;min-height:200px;max-height:42vh;resize:vertical;background:var(--bg);border:1px solid var(--rule);border-radius:10px;padding:12px;font:16px/1.4 var(--sans);color:var(--ink)}
+.hoja-info{font-size:13px;margin:8px 0 12px}
+.hoja-acc{display:flex;gap:10px}
+.hoja-acc button{flex:1;border-radius:10px;padding:13px 10px;font-weight:600;font-size:15px;border:1px solid var(--rule);background:var(--surface);color:var(--ink)}
+.hoja-acc .prim{flex:1.7;background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* avisos */
 .aviso,.tip{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:20;max-width:560px;margin:0 auto;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:14px}
@@ -137,10 +164,7 @@ noscript p{padding:20px}
   </div>
 
   <div class="fila-meta">
-    <div class="izq">
-      <span id="cuenta"></span>
-      <button class="btn-limpiar" id="btnLimpiar" type="button" aria-label="Limpiar filtros" hidden>Limpiar</button>
-    </div>
+    <span id="cuenta"></span>
     <label>Orden
       <select id="orden">
         <option value="az">A–Z</option>
@@ -151,9 +175,40 @@ noscript p{padding:20px}
     </label>
   </div>
 
+  <div class="acciones" id="acciones" hidden>
+    <button id="btnSelTodos" type="button"></button>
+    <button id="btnLimpiar" type="button" hidden>Limpiar filtros</button>
+  </div>
+
   <ul class="lista" id="lista"></ul>
   <p class="vacio muted" id="vacio" hidden></p>
   <noscript><p>Esta app necesita JavaScript para mostrar la lista.</p></noscript>
+</div>
+
+<div class="selbar" id="selbar" hidden>
+  <span class="n" id="selN"></span>
+  <button class="sec" id="selVaciar" type="button">Vaciar</button>
+  <button class="prim" id="selCompartir" type="button">Compartir</button>
+</div>
+
+<div class="hoja" id="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaTit" hidden>
+  <div class="hoja-fondo" id="hojaFondo"></div>
+  <div class="hoja-panel">
+    <div class="hoja-cab">
+      <h2 id="hojaTit">Mensaje para WhatsApp</h2>
+      <button id="hojaCerrar" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <div class="hoja-opc">
+      <label><input type="checkbox" id="optMeta"> Incluir compañía y activo</label>
+      <label><input type="checkbox" id="optStock"> Incluir disponible</label>
+    </div>
+    <textarea id="msgTxt" aria-label="Texto del mensaje" spellcheck="false"></textarea>
+    <p class="hoja-info muted" id="msgInfo"></p>
+    <div class="hoja-acc">
+      <button id="btnCopiar" type="button">Copiar</button>
+      <button id="btnEnviar" class="prim" type="button">Enviar por WhatsApp</button>
+    </div>
+  </div>
 </div>
 
 <div class="aviso" id="aviso" role="status" hidden>
@@ -192,6 +247,8 @@ var ITEMS = [];
 var RUBROS = [];
 var chipEls = [];
 var rubro = 'todos', comp = '', act = '';   // filtros activos
+var sel = {};            // artículos tildados para compartir (clave: posición en ITEMS)
+var visibles = [];       // resultados que se están mostrando
 
 /* ---- datos: [nombre, precio, disponible, rubro, compañía, activo(s), unidad] ---- */
 function preparar(d){
@@ -286,6 +343,7 @@ function resaltar(txt,toks){
   return abierto ? out + '</mark>' : out;
 }
 
+var ICONO_TILDE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 var ICONO_ENVIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>';
 
 function tag(k,v,toks){
@@ -302,7 +360,9 @@ function fila(it,toks){
     if(meta) meta += '<span class="sep"> · </span>';
     meta += it.ac.map(function(a){ return tag('act',a,toks); }).join('<span class="sep"> + </span>');
   }
-  return '<li class="it"><div><div class="nom">' + resaltar(it.nom,toks) + '</div>' +
+  return '<li class="it' + (sel[it.i] ? ' sel' : '') + '">' +
+         '<button class="chk" type="button" role="checkbox" aria-checked="' + (sel[it.i] ? 'true' : 'false') + '" data-i="' + it.i + '" aria-label="Elegir para compartir: ' + esc(it.nom) + '"><span>' + ICONO_TILDE + '</span></button>' +
+         '<div><div class="nom">' + resaltar(it.nom,toks) + '</div>' +
          (meta ? '<div class="meta">' + meta + '</div>' : '') +
          '<div class="stk">Disponible: <b>' + fmtS.format(it.s) + '</b>' + (it.u ? ' ' + esc(it.u) : '') + '</div></div>' +
          '<div class="prc">' + precio + '</div>' +
@@ -326,7 +386,6 @@ function render(){
 
   llenar('fComp', opciones('comp',toks), comp, 'Todas');
   llenar('fAct',  opciones('act',toks),  act,  'Todos');
-  $('btnLimpiar').hidden = (rubro==='todos' && !comp && !act);
 
   var r = ITEMS.filter(function(it){ return pasa(it,toks,''); });
   var o = $('orden').value;
@@ -335,11 +394,104 @@ function render(){
   else if(o==='stk') r.sort(function(a,b){ return b.s-a.s || a.i-b.i; });
   else r.sort(function(a,b){ return a.i-b.i; });
 
+  visibles = r;
   $('cuenta').textContent = r.length + (r.length===1 ? ' artículo' : ' artículos');
   $('lista').innerHTML = r.map(function(it){ return fila(it,toks); }).join('');
   var v = $('vacio');
   if(r.length){ v.hidden = true; }
   else { v.hidden = false; v.textContent = q ? 'Sin resultados para «' + q.trim() + '».' : 'No hay artículos con estos filtros.'; }
+  actualizarSel();
+}
+
+/* ---- selección y mensaje de WhatsApp ---- */
+function cantSel(){ return Object.keys(sel).length; }
+
+function actualizarSel(){
+  var n = cantSel();
+  $('selbar').hidden = !n;
+  document.body.classList.toggle('conSel', n>0);
+  $('selN').textContent = n + (n===1 ? ' elegido' : ' elegidos');
+  var hayFiltro = (rubro!=='todos' || comp || act);
+  var hayResultadosFiltrados = visibles.length > 0 && (hayFiltro || $('q').value.trim());
+  $('acciones').hidden = !(hayFiltro || hayResultadosFiltrados);
+  $('btnLimpiar').hidden = !hayFiltro;
+  var bt = $('btnSelTodos');
+  bt.hidden = !hayResultadosFiltrados;
+  if(!bt.hidden){
+    var todas = visibles.every(function(it){ return sel[it.i]; });
+    var un = visibles.length === 1;
+    bt.textContent = todas ? (un ? 'Quitar este artículo' : 'Quitar estos ' + visibles.length) : (un ? 'Elegir este artículo' : 'Elegir estos ' + visibles.length);
+  }
+}
+
+function lineaMeta(it,conMeta,conStock){
+  var partes = [];
+  if(conMeta){ if(it.co) partes.push(it.co); if(it.ac.length) partes.push(it.ac.join(' + ')); }
+  if(conStock) partes.push('Disponible: ' + fmtS.format(it.s) + (it.u ? ' ' + it.u : ''));
+  return partes.length ? '_' + partes.join(' · ') + '_' : '';
+}
+
+function armarMensaje(lista,conMeta,conStock){
+  var L = ['*Rindes y Cultivos DAS*', datos.lista + ' · ' + fechaAR(datos.fecha), ''];
+  lista.forEach(function(it){
+    L.push('• *' + it.nom + '* — ' + (it.p>0 ? 'U$S ' + fmtP.format(it.p) + (it.u ? ' / ' + it.u : '') : 'consultar precio'));
+    var m = lineaMeta(it,conMeta,conStock);
+    if(m) L.push(m);
+  });
+  return L.join('\n');
+}
+
+function elegidos(){
+  return ITEMS.filter(function(it){ return sel[it.i]; });
+}
+
+var LIMITE_URL = 3800;   // más largo que esto, WhatsApp puede no abrir el link con el texto
+function urlWA(txt){ return 'https://wa.me/?text=' + encodeURIComponent(txt); }
+function esLargo(txt){ return urlWA(txt).length > LIMITE_URL; }
+
+function regenerarMensaje(){
+  var lista = elegidos();
+  var txt = armarMensaje(lista, $('optMeta').checked, $('optStock').checked);
+  $('msgTxt').value = txt;
+  infoMensaje();
+}
+function infoMensaje(){
+  var n = cantSel();
+  var t = n + (n===1 ? ' artículo' : ' artículos') + ' · podés editar el texto antes de enviarlo.';
+  if(esLargo($('msgTxt').value)){
+    t += navigator.share ? ' Es un mensaje largo: al enviar se abre el menú de compartir, elegí WhatsApp.'
+                         : ' Es un mensaje largo: al enviar se copia y lo pegás en WhatsApp.';
+  }
+  $('msgInfo').textContent = t;
+}
+
+function abrirHoja(){
+  if(!cantSel()) return;
+  regenerarMensaje();
+  $('hoja').hidden = false;
+  document.documentElement.style.overflow = 'hidden';
+  $('btnCopiar').textContent = 'Copiar';
+}
+function cerrarHoja(){
+  $('hoja').hidden = true;
+  document.documentElement.style.overflow = '';
+}
+
+function copiar(txt){
+  if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
+  return new Promise(function(ok,mal){
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var bien = false; try{ bien = document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    bien ? ok() : mal(new Error('copy'));
+  });
+}
+function avisoBoton(btn,txt){
+  var orig = btn.dataset.orig || btn.textContent; btn.dataset.orig = orig;
+  btn.textContent = txt;
+  setTimeout(function(){ btn.textContent = orig; }, 1800);
 }
 
 /* ---- eventos de la interfaz ---- */
@@ -354,6 +506,15 @@ $('fComp').addEventListener('change', function(){ comp = this.value; render(); }
 $('fAct').addEventListener('change', function(){ act = this.value; render(); });
 $('btnLimpiar').addEventListener('click', function(){ rubro = 'todos'; comp = ''; act = ''; render(); });
 $('lista').addEventListener('click', function(e){
+  var c = e.target.closest('.chk');
+  if(c){                                        // tildar / destildar para armar un mensaje con varios artículos
+    var i = +c.dataset.i, li = c.closest('.it');
+    if(sel[i]) delete sel[i]; else sel[i] = true;
+    li.classList.toggle('sel', !!sel[i]);
+    c.setAttribute('aria-checked', sel[i] ? 'true' : 'false');
+    actualizarSel();
+    return;
+  }
   var t = e.target.closest('.tag');
   if(t){                                        // tocar la compañía o el activo de un artículo lo filtra
     if(t.dataset.k==='comp') comp = t.dataset.v; else act = t.dataset.v;
@@ -363,7 +524,30 @@ $('lista').addEventListener('click', function(e){
   var it = ITEMS[+b.dataset.i]; if(!it) return;
   var msg = '*' + it.nom + '*' + (it.p>0 ? ' — U$S ' + fmtP.format(it.p) + (it.u ? ' / ' + it.u : '') : ' — consultar precio') +
             '\n' + datos.lista + ' · Rindes y Cultivos DAS';
-  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+  window.open(urlWA(msg), '_blank', 'noopener');
+});
+$('btnSelTodos').addEventListener('click', function(){
+  var todas = visibles.every(function(it){ return sel[it.i]; });
+  visibles.forEach(function(it){ if(todas) delete sel[it.i]; else sel[it.i] = true; });
+  render();
+});
+$('selVaciar').addEventListener('click', function(){ sel = {}; render(); });
+$('selCompartir').addEventListener('click', abrirHoja);
+$('optMeta').addEventListener('change', regenerarMensaje);
+$('optStock').addEventListener('change', regenerarMensaje);
+$('msgTxt').addEventListener('input', infoMensaje);
+$('hojaCerrar').addEventListener('click', cerrarHoja);
+$('hojaFondo').addEventListener('click', cerrarHoja);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !$('hoja').hidden) cerrarHoja(); });
+$('btnCopiar').addEventListener('click', function(){
+  var b = this;
+  copiar($('msgTxt').value).then(function(){ avisoBoton(b,'¡Copiado!'); }, function(){ avisoBoton(b,'No se pudo copiar'); });
+});
+$('btnEnviar').addEventListener('click', function(){
+  var txt = $('msgTxt').value, b = this;
+  if(!esLargo(txt)){ window.open(urlWA(txt), '_blank', 'noopener'); return; }
+  if(navigator.share){ navigator.share({text: txt}).catch(function(){}); return; }
+  copiar(txt).then(function(){ avisoBoton(b,'Copiado: pegalo en WhatsApp'); }, function(){ avisoBoton(b,'No se pudo copiar'); });
 });
 
 /* ---- carga de datos (red primero, con copia guardada como respaldo) ---- */
