@@ -73,6 +73,9 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .chip .n{color:var(--muted);font-size:12px;margin-left:4px;font-variant-numeric:tabular-nums}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
 .chip[aria-pressed="true"] .n{color:inherit;opacity:.75}
+.chips2{padding-top:8px}
+.chips2 .chip{font-size:13px;padding:4px 11px;background:transparent}
+.chips2 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .fila-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0 4px;font-size:13px;color:var(--muted)}
 .fila-meta select{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:5px 8px;font-size:13px;color:var(--ink)}
 
@@ -116,7 +119,8 @@ noscript p{padding:20px}
       <input id="q" type="search" placeholder="Buscar artículo…" aria-label="Buscar artículo" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
       <button class="limpiar" id="limpiar" aria-label="Borrar búsqueda" hidden>×</button>
     </div>
-    <div class="chips" id="chips" role="group" aria-label="Filtrar por tipo"></div>
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por rubro"></div>
+    <div class="chips chips2" id="chips2" role="group" aria-label="Filtrar semillas por cultivo" hidden></div>
   </div>
 
   <div class="fila-meta">
@@ -164,27 +168,31 @@ function esc(s){ return s.replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 
-/* ---- grupos por nombre (solo los que se reconocen sin ambigüedad) ---- */
-var GRUPOS = [
-  {id:'todos',   txt:'Todos',   re:null},
-  {id:'maiz',    txt:'Maíz',    re:/^maiz\b/},
-  {id:'girasol', txt:'Girasol', re:/^girasol\b/},
-  {id:'soja',    txt:'Soja',    re:/^sem\.? soja\b/},
-  {id:'sorgo',   txt:'Sorgo',   re:/^sorgo\b/}
+/* ---- rubros (vienen en datos.json) y, dentro de Semillas, cultivo (por nombre) ---- */
+var RUBROS = ['Semillas','Herbicidas','Insecticidas','Fungicidas','Fertilizantes y nutrición','Coadyuvantes','Inoculantes y curasemillas','Otros'];
+var SUBS = [
+  {id:'todas',   txt:'Todas',           re:null},
+  {id:'maiz',    txt:'Maíz',            re:/^maiz\b/},
+  {id:'girasol', txt:'Girasol',         re:/^girasol\b/},
+  {id:'soja',    txt:'Soja',            re:/^sem\.? soja\b/},
+  {id:'sorgo',   txt:'Sorgo',           re:/^sorgo\b/},
+  {id:'otras',   txt:'Otras semillas',  re:null}
 ];
-function grupoDe(n){
-  for(var i=1;i<GRUPOS.length;i++){ if(GRUPOS[i].re.test(n)) return GRUPOS[i].id; }
-  return '';
+function subDe(n){
+  for(var i=1;i<SUBS.length-1;i++){ if(SUBS[i].re.test(n)) return SUBS[i].id; }
+  return 'otras';
 }
 
 var datos = null;      // lo que se está mostrando
 var ITEMS = [];
-var grupo = 'todos';
+var rubro = 'todos';   // filtro principal
+var sub = 'todas';      // cultivo (solo cuando rubro = Semillas)
 
 function preparar(d){
   var arr = d.items.map(function(x){
     var n = norm(x[0]);
-    return {nom:x[0], n:n, c:n.replace(/\s+/g,''), p:x[1], s:x[2], g:grupoDe(n)};
+    var r = x[3] || 'Otros';
+    return {nom:x[0], n:n, c:n.replace(/\s+/g,''), p:x[1], s:x[2], r:r, g:(r==='Semillas' ? subDe(n) : '')};
   });
   arr.sort(function(a,b){ return a.nom.localeCompare(b.nom,'es',{numeric:true,sensitivity:'base'}); });
   arr.forEach(function(it,i){ it.i = i; });
@@ -193,20 +201,37 @@ function preparar(d){
 
 function fechaAR(iso){ var p = iso.split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : iso; }
 
+function nuevoChip(cont,id,txt,cant,activo){
+  var b = document.createElement('button');
+  b.className = 'chip'; b.type = 'button'; b.dataset.g = id;
+  b.setAttribute('aria-pressed', activo ? 'true' : 'false');
+  b.innerHTML = esc(txt) + '<span class="n">' + cant + '</span>';
+  cont.appendChild(b);
+}
+function pintarRubros(){
+  var cont = $('chips'); cont.innerHTML = '';
+  nuevoChip(cont,'todos','Todos',ITEMS.length,rubro==='todos');
+  RUBROS.forEach(function(r){
+    var cant = ITEMS.filter(function(it){ return it.r===r; }).length;
+    if(cant) nuevoChip(cont,r,r,cant,rubro===r);
+  });
+}
+function pintarSubs(){
+  var cont = $('chips2'); cont.innerHTML = '';
+  if(rubro!=='Semillas'){ cont.hidden = true; return; }
+  SUBS.forEach(function(s){
+    var cant = ITEMS.filter(function(it){ return it.r==='Semillas' && (s.id==='todas' || it.g===s.id); }).length;
+    if(cant) nuevoChip(cont,s.id,s.txt,cant,sub===s.id);
+  });
+  cont.hidden = false;
+}
+
 function usar(d){
   datos = d;
   ITEMS = preparar(d);
   $('sub').textContent = d.lista + ' · actualizada al ' + fechaAR(d.fecha) + ' · ' + ITEMS.length + ' artículos';
-  var cont = $('chips'); cont.innerHTML = '';
-  GRUPOS.forEach(function(g){
-    var cant = g.id==='todos' ? ITEMS.length : ITEMS.filter(function(it){ return it.g===g.id; }).length;
-    if(!cant) return;
-    var b = document.createElement('button');
-    b.className = 'chip'; b.type = 'button'; b.dataset.g = g.id;
-    b.setAttribute('aria-pressed', g.id===grupo ? 'true' : 'false');
-    b.innerHTML = esc(g.txt) + '<span class="n">' + cant + '</span>';
-    cont.appendChild(b);
-  });
+  pintarRubros();
+  pintarSubs();
   render();
 }
 
@@ -243,7 +268,8 @@ function render(){
   $('limpiar').hidden = !q;
   var toks = norm(q).split(/\s+/).filter(Boolean);
   var r = ITEMS.filter(function(it){
-    if(grupo!=='todos' && it.g!==grupo) return false;
+    if(rubro!=='todos' && it.r!==rubro) return false;
+    if(rubro==='Semillas' && sub!=='todas' && it.g!==sub) return false;
     return toks.every(function(t){ return it.n.indexOf(t)!==-1 || it.c.indexOf(t)!==-1; });
   });
   var o = $('orden').value;
@@ -265,8 +291,16 @@ $('orden').addEventListener('change', render);
 $('limpiar').addEventListener('click', function(){ $('q').value=''; render(); $('q').focus(); });
 $('chips').addEventListener('click', function(e){
   var b = e.target.closest('.chip'); if(!b) return;
-  grupo = b.dataset.g;
+  rubro = b.dataset.g; sub = 'todas';
   Array.prototype.forEach.call($('chips').children, function(c){ c.setAttribute('aria-pressed', c===b ? 'true' : 'false'); });
+  pintarSubs();
+  render();
+  window.scrollTo({top:0});
+});
+$('chips2').addEventListener('click', function(e){
+  var b = e.target.closest('.chip'); if(!b) return;
+  sub = b.dataset.g;
+  Array.prototype.forEach.call($('chips2').children, function(c){ c.setAttribute('aria-pressed', c===b ? 'true' : 'false'); });
   render();
   window.scrollTo({top:0});
 });
